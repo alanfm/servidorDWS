@@ -43,7 +43,7 @@
     + Verifique o IP atual do computador através do comando:
         - ```$ ip a```;
     + Edite o arquivo ```/etc/network/interfaces``` através do comando: ```# nano /etc/network/interfaces```;
-        - Deixe o arquivo com as seguintes linhas;
+        - Deixe o arquivo com as seguintes linhas (Lembrando que o nome da interface pode ser diferente em cada maquina e as configurações de IP também);
     ```
         # This file describes the network interfaces available on your system
         # and how to activate them. For more information, see interfaces(5)
@@ -63,3 +63,4 @@
             broadcast 192.168.0.255
             gateway 192.168.0.1
     ```
++ Pressione ```Ctrl+o``` para salvar e ```Ctrl+x``` para sair.
