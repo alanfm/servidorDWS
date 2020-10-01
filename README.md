@@ -66,7 +66,7 @@
     + Pressione ```Ctrl+o``` para salvar e ```Ctrl+x``` para sair.
 
 ## Instalando o Bind9 (Servidor de DNS)
-    + Usar o tutorial da Digital Ocean (https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-debian-9)
+1. Usei o tutorial da Digital Ocean (https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-debian-9) para fazer a instalação e configuração do Bin9.
     + Até o passo "Setting Bind to IPv4 Mode" é igual ao tutorial, a partir de "Configuring the Primary DNS Server" colocar as configurações que serão usadas no campus.
     + No caixa onde pede para criar uma acl(/etc/bind/named.conf.options - 1 de 3), coloca-se apenas o ip do servidor (10.100.111.254), já que todos os serviços vão rodar na mesma maquina.
     
@@ -136,12 +136,12 @@
     
     
 ## Instalando o Git (Serviço de versionamento)
-    + O git é um serviço de versionamento para pegar os sistemas que estão no GitHub
-        - ```# apt install git -y```
+1. O git é um serviço de versionamento para pegar os sistemas que estão no GitHub
+    + ```# apt install git -y```
     
 ## Instalando o Docker (Serviço de conteiners)
-    + Para instalar o docker é bem simples, primeiro precisamos instalar o ```Curl``` para baixar um arquivo para instalação automática do Docker.
-        - ```# apt install curl -y```
+1. Para instalar o docker é bem simples, primeiro precisamos instalar o ```Curl``` para baixar um arquivo para instalação automática do Docker.
+    + ```# apt install curl -y```
     + Usei a documentação do Docker para fazer esse procedimento (https://docs.docker.com/engine/install/debian/).
         - Na seção "Install using the convenience script" tem todos os procedimentos necessários. Porém basta executar as linhas de comando abaixo.
         - ```# curl -fsSL https://get.docker.com -o get-docker.sh```
@@ -149,7 +149,7 @@
         - ```# usermod -aG docker cti```
         
 ## Criando os containers para rodas os sistemas
-    + Com o git faremos o clone do projeto ```alanfm/docker``` através do comando ```$ git clone https://github.com/alanfm/docker.git```
+1. Com o git faremos o clone do projeto ```alanfm/docker``` através do comando ```$ git clone https://github.com/alanfm/docker.git```
     + Quando executado o comando será criado um diretório chamado docker. Entre no diretório ```cd docker/```.
     + Faça a cópia do arquivo ```exemplo.env``` com o comando ```$ cp exemplo.env .env```.
     + Será cria um arquivo chamado ```.env``` nesse arquito estarão todas as configurações para os conteiner que serão criado.
