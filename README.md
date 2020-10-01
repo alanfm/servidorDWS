@@ -63,4 +63,96 @@
             broadcast 192.168.0.255
             gateway 192.168.0.1
     ```
-+ Pressione ```Ctrl+o``` para salvar e ```Ctrl+x``` para sair.
+    + Pressione ```Ctrl+o``` para salvar e ```Ctrl+x``` para sair.
+
+## Instalando o Bind9 (Servidor de DNS)
+    + Usar o tutorial da Digital Ocean (https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-debian-9)
+    + Até o passo "Setting Bind to IPv4 Mode" é igual ao tutorial, a partir de "Configuring the Primary DNS Server" colocar as configurações que serão usadas no campus.
+    + No caixa onde pede para criar uma acl(/etc/bind/named.conf.options - 1 de 3), coloca-se apenas o ip do servidor (10.100.111.254), já que todos os serviços vão rodar na mesma maquina.
+    
+    ```
+        acl "trusted" {
+            10.100.111.254;
+        };
+    ```
+    
+    + Na caixa que pedi para adicionar as algumas linhas, coloca-se o ip do servidor dns (10.100.111.254) em ``` listen-on { 10.100.111.254 } ``` e em ```forwarders``` colocar na primeira linha o ip de DNS mais rápido fora do campus (uso o 1.1.1.1).
+    + Na seção "Configuring the Local File - /etc/bind/named.conf.local — 1 of 2" trocamos o endereço do exemplo "nyc3.example.com" por "baturite.ifce" em todas as ocorrencias. Ficará como no exemplo abaixo.
+    ```
+        zone "baturite.ifce" {
+            type master;
+            file "/etc/bind/zones/db.baturite.ifce"; # zone file path
+        };
+    ```
+    + Na box "/etc/bind/named.conf.local — 2 of 2" trocaremos os trechos "128.10" por "10.100" que é a classe de IP que usamos no campus.
+    ```
+        zone "10.100.in-addr.arpa" {
+            type master;
+            file "/etc/bind/zones/db.10.100";  # 10.100.96.0/16 subnet
+        };
+    ```
+    
+    + No final da seção "Creating the Forward Zone File" o arquivo deve ficar desse jeito
+    
+    ```
+        $TTL    604800
+        @       IN      SOA     baturite.ifce. admin.baturite.ifce. (
+                          3     ; Serial
+                     604800     ; Refresh
+                      86400     ; Retry
+                    2419200     ; Expire
+                     604800 )   ; Negative Cache TTL
+        ;
+        ; name servers - NS records
+             IN      NS      ns.baturite.ifce.
+
+        ; name servers - A records
+        ns.baturite.ifce.              IN      A      10.100.111.254
+
+        ; 10.128.0.0/16 - A records
+        reservas.baturite.ifce.        IN      A      10.100.111.254
+        frequencias.baturite.ifce.     IN      A      10.100.111.254
+    ```
+    + Em "Creating the Reverse Zone File(s)" o arquivo deve ficar no final como abaixo. 
+    ```
+        $TTL    604800
+        @       IN      SOA     baturite.ifce. admin.baturite.ifce. (
+                                      3         ; Serial
+                                 604800         ; Refresh
+                                  86400         ; Retry
+                                2419200         ; Expire
+                                 604800 )       ; Negative Cache TTL
+        ; name servers
+              IN      NS      ns.baturite.ifce.
+
+        ; PTR Records
+        10.100 IN      PTR     ns.baturite.ifce.    ; 10.100.111.254
+        10.100 IN      PTR     reservas.baturite.ifce.
+        10.100 IN      PTR     frequencias.baturite.ifce.
+    ```
+    + Vale ressaltar que sempre que for inserido um novo subdominio é necessário acrescenta-lo no arquivo de zona e zona reverso.
+    + Faça os teste de arquivos e sitaxe colocados no exemplo trocando para o nome dos arquivos e zonas criadas para verificação de erros.
+    + Não é para fazer a seção "Configuring the Secondary DNS Server", pois usaremos apenas um servidor de DNS.
+    
+    
+## Instalando o Git (Serviço de versionamento)
+    + O git é um serviço de versionamento para pegar os sistemas que estão no GitHub
+        - ```# apt install git -y```
+    
+## Instalando o Docker (Serviço de conteiners)
+    + Para instalar o docker é bem simples, primeiro precisamos instalar o ```Curl``` para baixar um arquivo para instalação automática do Docker.
+        - ```# apt install curl -y```
+    + Usei a documentação do Docker para fazer esse procedimento (https://docs.docker.com/engine/install/debian/).
+        - Na seção "Install using the convenience script" tem todos os procedimentos necessários. Porém basta executar as linhas de comando abaixo.
+        - ```# curl -fsSL https://get.docker.com -o get-docker.sh```
+        - ```# sh get-docker.sh```
+        - ```# usermod -aG docker cti```
+        
+## Criando os containers para rodas os sistemas
+    + Com o git faremos o clone do projeto ```alanfm/docker``` através do comando ```$ git clone https://github.com/alanfm/docker.git```
+    + Quando executado o comando será criado um diretório chamado docker. Entre no diretório ```cd docker/```.
+    + Faça a cópia do arquivo ```exemplo.env``` com o comando ```$ cp exemplo.env .env```.
+    + Será cria um arquivo chamado ```.env``` nesse arquito estarão todas as configurações para os conteiner que serão criado.
+    + Abra o arquivo com um editor de texto. ```$ nano .env```. Navegue pelas linhas usando as setas do teclado e faça as modificações necessárias para rodar no servidor, como mudar as senhas e usuários para nomes mais seguros.
+    + Execute o comando ```$ docker-compose up -d```. Nessa parte levará algum tempo, pois vai baixar as imagens para uso dos conteiners e será feito a compilação de alguns módulos.
+    
